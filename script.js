@@ -1,10 +1,10 @@
 const CARDS_IMGS = [
-  "./cards/bobrossparrot.gif",
-  "./cards/explodyparrot.gif",
-  "./cards/fiestaparrot.gif",
-  "./cards/revertitparrot.gif",
-  "./cards/tripletsparrot.gif",
-  "./cards/unicornparrot.gif",
+  "./cards/success-kid.jpg",
+  "./cards/hide-in-pain.jpg",
+  "./cards/nazare.jpg",
+  "./cards/fry.jpg",
+  "./cards/patrick.jpg",
+  "./cards/pikachu.jpg",
 ];
 
 let firstCard;
