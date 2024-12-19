@@ -2,7 +2,6 @@ const CARDS_IMGS = [
   "./cards/bobrossparrot.gif",
   "./cards/explodyparrot.gif",
   "./cards/fiestaparrot.gif",
-  "./cards/metalparrot.gif",
   "./cards/revertitparrot.gif",
   "./cards/tripletsparrot.gif",
   "./cards/unicornparrot.gif",
@@ -37,8 +36,7 @@ function insertCardsIntoTheBoard(cards) {
   boardEl.innerHTML = '';
   for (let i = 0; i < cards.length; i++) {
     boardEl.innerHTML += `
-      <div class="card">
-        <div class="card-inner" onclick="flipCard(this)">
+        <div class="card" onclick="flipCard(this)">
           <div class="card-front">
             <img src='./cards/front.png'>
           </div>
@@ -46,7 +44,6 @@ function insertCardsIntoTheBoard(cards) {
             <img src='${cards[i]}'>
           </div>
         </div>    
-      </div>
     `;
   }
 }
