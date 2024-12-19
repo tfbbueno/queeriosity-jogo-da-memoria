@@ -7,6 +7,8 @@ const CARDS_IMGS = [
   "./cards/pikachu.jpg",
 ];
 
+const SECOND = 1_000;
+
 let firstCard;
 let secondCard;
 let plays = 0;
@@ -20,13 +22,10 @@ function loadGame() {
 function sortCardsDisposal() {
   const cardsDisposal = [];
 
-  for (let i = 0; i < CARDS_IMGS.length; i++) {
-    const card = CARDS_IMGS[i];
-
-    // pair
+  CARDS_IMGS.forEach(card => {
     cardsDisposal.push(card);
     cardsDisposal.push(card);
-  }
+  });
 
   return cardsDisposal.sort(randomOrderCriteria);
 }
@@ -34,86 +33,75 @@ function sortCardsDisposal() {
 function insertCardsIntoTheBoard(cards) {
   const boardEl = document.querySelector('.board');
   boardEl.innerHTML = '';
-  for (let i = 0; i < cards.length; i++) {
+
+  cards.forEach(card => {
     boardEl.innerHTML += `
         <div class="card" onclick="flipCard(this)">
           <div class="card-front">
             <img src='./cards/front.png'>
           </div>
           <div class="card-back">
-            <img src='${cards[i]}'>
+            <img src='${card}'>
           </div>
         </div>    
     `;
-  }
+  });
 }
 
 function flipCard(card) {
-  if (card.classList.contains("is-flipped")) {
-    return;
-  }
+  if (isCardAlreadyFlipped(card) || isBothCardAlreadyFlipped()) return;
 
-  if (firstCard !== undefined) {
-    if (secondCard !== undefined) {
-      return;
-    }
-  }
-
-  plays++;
   card.classList.add('is-flipped');
 
+  //sets card
   const isFirstCard = firstCard === undefined;
   if (isFirstCard) {
     firstCard = card;
     return;
+  } else {
+    secondCard = card;
+    plays++;
   }
 
-  secondCard = card;
-
-  const sameCards = firstCard.innerHTML === secondCard.innerHTML;
-  if (!sameCards) {
-    setTimeout(unflipCards, 1000);
-    return;
+  const isMatch = firstCard.innerHTML === secondCard.innerHTML;
+  if (isMatch) {
+    hits++;
+    resetPlay();
+  } else {
+    setTimeout(unflipCardsAndResetPlay, SECOND);
   }
-
-  firstCard = undefined;
-  secondCard = undefined;
-  hits++;
 
   checkEndOfGame();
 }
 
-function flipIfIsDiffentCard(card) {
-  if (card.classList.contains("is-flipped")) {
-    return;
-  }
-
-  if (firstCard !== undefined) {
-    if (secondCard !== undefined) {
-      return;
-    }
-  }
-
-  plays++;
-  card.classList.add('is-flipped');
-
+function isCardAlreadyFlipped(card) {
+  return card.classList.contains("is-flipped")
 }
 
-function unflipCards() {
+function isBothCardAlreadyFlipped() {
+  return firstCard !== undefined && secondCard !== undefined;
+}
+
+function unflipCardsAndResetPlay() {
   firstCard.classList.remove('is-flipped');
   secondCard.classList.remove('is-flipped');
+  resetPlay();
+}
+
+function resetPlay() {
   firstCard = undefined;
   secondCard = undefined;
 }
 
 function checkEndOfGame() {
-  if (hits === CARDS_IMGS.length) {
-    setTimeout(finishGame, 500);
+  const gotAllCards = hits === CARDS_IMGS.length;
+  if (gotAllCards) {
+    setTimeout(finishGame, SECOND / 2);
   }
 }
 
 function finishGame() {
-  alert(`Parabéns! Você ganhou em ${hits} jogada(s)!`);
+  alert(`Parabéns! Você ganhou em ${plays} jogada(s)!`);
 }
 
 
