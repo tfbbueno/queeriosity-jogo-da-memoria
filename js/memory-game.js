@@ -30,9 +30,7 @@ function loadGame() {
   insertCardsIntoTheBoard(cards);
 }
 
-function sortCardsDisposal() { 
-  console.log("Cards:");
-  console.log(CARDS);
+function sortCardsDisposal() {  
   amountOfCards = Math.min(CARDS.length, amountOfCards);
   selectedCards = getRandomCards(amountOfCards);
   const cardsDisposal = selectedCards.flatMap(card => [card, card]);
@@ -136,9 +134,9 @@ function randomOrderCriteria() {
 }
 
 function abrirModalInfo(cardId) { 
-  var modal = new bootstrap.Modal(document.getElementById("modalInfo"));
+  var modal = new bootstrap.Modal(document.getElementById("modalInfo")); 
   var card = CARDS.find(card => card.id == cardId);
-  
+   
   const modalInfoLabel = document.getElementById("modalInfoLabel"); 
   modalInfoLabel.innerHTML =`${card.nome}`;
  
@@ -189,7 +187,7 @@ function loadCardsPlayed(){
           <p class="card-text">
             ${card.texto.substring(0, 100) + "..."}
           </p> 
-          <button type="button" class="btn btn-primary"  onclick="abrirModalInfo(${card.id})" >
+          <button type="button" class="btn btn-primary"  onclick="abrirModalInfo('${card.id}')" >
             Leia mais
           </button>
         </div>
