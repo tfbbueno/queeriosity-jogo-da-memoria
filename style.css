@@ -1,41 +1,42 @@
 * {
   box-sizing: border-box;
-}
-
-body {
+} 
+body{
   padding: 0;
   margin: 0;
-  background-color: #EEF9BF;
+  background-color: #FFF0ED !important;
+  display: flex;
+  flex-direction: column; /* Faz os elementos ficarem empilhados verticalmente */
+  justify-content: center;
+  gap: 20px; /* Espaço entre o título e o quadro */
+  text-align: center;
+  align-items: center;
+  min-height: 100vh;
+}
+main {
+  flex: 1 0 auto;
+  overflow-y: auto;
+}
+
+.sbody { 
   width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 100vh; 
 }
-
-.board {
-  width: 75vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.card {
-  width: 200px;
-  height: 250px;
+.cartao {
+  width: 8rem;
+  height: 12rem;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.6s;
+  margin: 0.5rem;
 }
 
-.card:hover {
+.cartao:hover {
   cursor: pointer;
 }
 
-.card-front,
-.card-back {
+.cartao-front,
+.cartao-back {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -47,14 +48,102 @@ body {
   background: white;
 }
 
-.card-back {
+.cartao-back {
   transform: rotateY(180deg);
 }
 
-.card.is-flipped {
+.cartao.is-flipped {
   transform: rotateY(180deg);
 }
 
-img {
-  width: 150px;
+.img-cartao {
+  width: 75%;
+  aspect-ratio: 1 / 1; 
+  object-fit: cover;    
+}
+
+.div-img-info{
+  text-align: center;
+}
+.img-info{  
+  width: 50%;
+  aspect-ratio: 1 / 1; /* mantém a imagem quadrada */
+  object-fit: cover;   /* preenche sem distorcer */
+}
+
+.div-text-info{
+  text-align: justify;
+} 
+.card-img-top {
+  width: 100%;
+  aspect-ratio: 1 / 1;  
+  object-fit: cover;    
+}
+.hidden {
+  display: none !important;
+}
+.centralizado {
+  display: grid;
+  place-items: center;
+  flex: 1;                /* ← Faz o main crescer para ocupar o espaço restante */
+  padding: 1rem;
+}
+
+
+.tabuleiro{     
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-content: space-around;
+} 
+.tabuleiroResultado{  
+  display: flex; 
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-content: space-around;
+}
+.divResultado{
+  width: 80%;
+}
+.divLayout{
+  width: 100%;
+}
+.texto-centralizado{
+  text-align: center;
+} 
+.cardResultado{
+  width: 13rem;
+  margin: 1rem;  
+  display: flex;
+  flex-direction: column;
+}
+.cardResultado .card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.cardResultado .card-text {
+  flex: 1; /* Faz o texto ocupar o espaço disponível */
+}
+.light-text{
+  color: white;
+}
+.cardResultado .btn {
+  margin-top: auto; /* Empurra o botão para o final do card-body */
+}
+.text-wrap
+{
+  text-wrap: auto;
+}
+#cardResultado {
+  width: 100%;
+  max-width: 400px; /* 50% de uma tela grande (~1200px) */
+}
+.about{
+  margin: 2rem;
+  max-width: 70rem;
 }
