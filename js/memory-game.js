@@ -176,10 +176,16 @@ function aoFecharModalInfo() {
 // Resultados
 function loadCardsPlayed(){ 
   const boardEl = document.querySelector('#cartoes-cientistas');
-  boardEl.innerHTML = '';
+  var column = Math.ceil(Math.sqrt(amountOfCards*2)); 
+
+  var tabuleiroResultadoHtml = `
+  <div class="container centralizado">
+  
+  <div id="cartoes" class="row row-cols-sm-2 row-cols-md-${column} row-cols-lg-${column} justify-content-center"">
+  `;
 
   selectedCards.forEach(card => {
-    boardEl.innerHTML += `  
+    tabuleiroResultadoHtml += `  
         <div id="card-${card.id}" class="card cardResultado" >
         <img src="${card.imagem}" class="card-img-top" alt="${card.nome}">
         <div class="card-body">
@@ -194,6 +200,9 @@ function loadCardsPlayed(){
       </div>
     `;
   });
+
+  tabuleiroResultadoHtml+='</div></div>';
+  boardEl.innerHTML = tabuleiroResultadoHtml;
 }
 
 document.getElementById('modalInfo').addEventListener('hidden.bs.modal', () => {
@@ -207,6 +216,6 @@ document.querySelector('#tabuleiro').addEventListener('click', (e) => {
   const card = e.target.closest('.cartao');
   if (card) flipCard(card);
 });
-window.abrirModalInfo = abrirModalInfo;
+window.abrirModalInfo = abrirModalInfo; 
 
 
