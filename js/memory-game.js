@@ -10,8 +10,20 @@ const db  = getFirestore(app);
 let CARDS = [];
 
 async function fetchCards() {
-  const snap = await getDocs(collection(db, "cards"));
-  CARDS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const today = new Date();  
+  try{
+    const snap = await getDocs(collection(db, "cards"));
+    CARDS = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+        .filter(card => !card.dataLimite || card.dataLimite.toDate() >= today);  
+
+    if(CARDS == null || CARDS.length === 0 ) {
+      showMessage("Nenhum cartão encontrado 🥲. Tente novamente mais tarde.");
+    }
+  } catch(error) {
+    showMessage(error.message);
+    console.error("Erro ao buscar cartões:", error);
+  }
 }                            
 
 const SECOND = 1_000;
@@ -28,6 +40,13 @@ let gameFinished = false;
 function loadGame() {
   let cards = sortCardsDisposal();
   insertCardsIntoTheBoard(cards);
+}
+function showMessage(message) {
+    document.getElementById("tabuleiro").innerHTML = `
+      <div class="alert alert-warning text-center mt-4" role="alert">
+          ${message}
+      </div>
+    `;
 }
 
 function sortCardsDisposal() {  
@@ -209,9 +228,11 @@ document.getElementById('modalInfo').addEventListener('hidden.bs.modal', () => {
   aoFecharModalInfo(); 
 }); 
 
-await fetchCards();    
-loadGame();  
-loadCardsPlayed();
+await fetchCards(); 
+if(CARDS.length > 0) {
+  loadGame();  
+  loadCardsPlayed();
+} 
 document.querySelector('#tabuleiro').addEventListener('click', (e) => {
   const card = e.target.closest('.cartao');
   if (card) flipCard(card);
