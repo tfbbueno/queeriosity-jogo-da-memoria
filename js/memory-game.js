@@ -11,12 +11,16 @@ let CARDS = [];
 
 async function fetchCards() {
   const snap = await getDocs(collection(db, "cards"));
-  CARDS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const today = new Date();  
+
+  CARDS = snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+      .filter(card => !card.dataLimite || card.dataLimite.toDate() >= today);
 }                            
 
 const SECOND = 1_000;
 
-let amountOfCards = 8;
+let amountOfCards = 100;
 let firstCard;
 let secondCard;
 let plays = 0;
