@@ -1,4 +1,4 @@
-/*export const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "",
   authDomain: "",
   projectId: "",
@@ -6,4 +6,4 @@
   messagingSenderId: "",
   appId: "",
   measurementId: ""
-};*/
+};
