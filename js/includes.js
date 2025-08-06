@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const path = window.location.pathname; 
 
-  if (path.includes("index.html") || path === "/" || path === "/index") {
+  if (path.includes("index.html") || path === "/" || path === "/index" || path === "" ) {
     carregarTexto("index", "divInstrucoes", "#divInstrucoes");
   }
  
