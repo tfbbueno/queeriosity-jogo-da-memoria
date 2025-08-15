@@ -9,25 +9,7 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 let CARDS = [];
 
-async function fetchCards() {
-  const today = new Date();  
-  try{
-    const snap = await getDocs(collection(db, "cards"));
-    CARDS = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-        .filter(card => !card.dataLimite || card.dataLimite.toDate() >= today);  
-
-    if(CARDS == null || CARDS.length === 0 ) {
-      showMessage("Nenhum cartão encontrado 🥲. Tente novamente mais tarde.");
-    }
-  } catch(error) {
-    showMessage(error.message);
-    console.error("Erro ao buscar cartões:", error);
-  }
-}                            
-
 const SECOND = 1_000;
-
 let amountOfCards = 8;
 let firstCard;
 let secondCard;
@@ -36,14 +18,49 @@ let hits = 0;
 let selectedCards = [];
 let gameFinished = false;
 
-// jogo
+// Helper: dá timeout em uma promise
+function withTimeout(promise, ms = 10000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
+async function fetchCards() {
+  const loadingEl = document.getElementById("loading");
+  loadingEl?.classList.remove("hidden"); // mostra o loader
+
+  const today = new Date();
+  try {
+    // getDocs com timeout de 10s
+    const snap = await withTimeout(getDocs(collection(db, "cards")), 10000);
+
+    CARDS = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(card => !card.dataLimite || card.dataLimite.toDate() >= today);
+
+    if (!CARDS || CARDS.length === 0) {
+      showMessage("Nenhum cartão encontrado 🥲. Tente novamente mais tarde.");
+    } else {
+      document.getElementById("divTelaInicial").classList.remove("hidden");
+    }
+  } catch (error) {
+    console.error("Falha ao carregar Firestore:", error);
+    // mostra sua mensagem quando falhar (inclui timeout)
+    showMessage("Nenhum cartão encontrado 🥲. Tente novamente mais tarde.", "danger");
+  } finally {
+    loadingEl?.classList.add("hidden"); // esconde o loader
+  }
+}
+
+// jogo 
 function loadGame() {
   let cards = sortCardsDisposal();
   insertCardsIntoTheBoard(cards);
 }
-function showMessage(message) {
-    document.getElementById("tabuleiro").innerHTML = `
-      <div class="alert alert-warning text-center mt-4" role="alert">
+function showMessage(message, type = "warning") {
+    document.getElementById("erro").innerHTML = `
+      <div class="alert alert-${type} text-center mt-4" role="alert">
           ${message}
       </div>
     `;
@@ -77,7 +94,8 @@ function insertCardsIntoTheBoard(cards) {
         <img src="./files/front.png" class="img-cartao">
       </div>
       <div class="cartao-back">
-        <img src="${card.imagem}" class="img-cartao">
+        <div><img src="${card.imagem}" class="img-cartao"></div>
+        <!--<div class="nome-cartao">${card.nome}</div>-->
       </div>
     </div>
     </div>
@@ -106,6 +124,10 @@ function flipCard(card) {
 
   if (isMatch) {
     hits++; 
+    
+    document.querySelectorAll(`.cartao[data-id="${firstCard.dataset.id}"]`)
+    .forEach(el => el.classList.add('is-matched'));
+
     abrirModalInfo(cardId);
     resetPlay();
   } else {
@@ -144,7 +166,7 @@ function finishGame() {
   sessionStorage.setItem("plays", plays);
   document.getElementById("txtResultado").innerText = plays ? `Você ganhou em ${plays} jogadas!`: "";
   document.getElementById("divResultado").classList.remove("hidden");
-  document.getElementById("tabuleiro").classList.add("hidden");
+  document.getElementById("divTelaInicial").classList.add("hidden");
   document.getElementById("divInstrucoes").classList.add("hidden");
 }
 
@@ -156,12 +178,16 @@ function abrirModalInfo(cardId) {
   var modal = new bootstrap.Modal(document.getElementById("modalInfo")); 
   var card = CARDS.find(card => card.id == cardId);
    
-  const modalInfoLabel = document.getElementById("modalInfoLabel"); 
-  modalInfoLabel.innerHTML =`${card.nome}`;
+  /*const modalInfoLabel = document.getElementById("modalInfoLabel"); 
+  modalInfoLabel.innerHTML =`${card.nome}`;*/
  
   const divSaibaMais = document.getElementById("divSaibaMais"); 
   var btnSaibaMais = "";
-  if(card.links.length > 1) {
+   if(card.links.length <=2) {
+        card.links.forEach(link => {
+      btnSaibaMais += `<span><a class="btn btn-primary" target="_blank" href="${link.url}">${link.titulo}</a></span>`;
+    });
+  } else if(card.links.length > 1) {
     btnSaibaMais += `
      <div class="btn-group" role="group">
       <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -171,18 +197,16 @@ function abrirModalInfo(cardId) {
     `;
     card.links.forEach(link => {
       btnSaibaMais += `<li><a class="dropdown-item" target="_blank" href="${link.url}">${link.titulo}</a></li>`;
-    });
-    
+    });    
     btnSaibaMais += ` </ul></div>`;
-  } else if(card.links.length == 1) {
-    btnSaibaMais += `<a class="btn btn-primary" target="_blank" href="${card.links[0].url}">Saiba mais</a>`;
-  }
+  }  
 
   divSaibaMais.innerHTML = btnSaibaMais;
 
   const modalInfoBody = document.getElementById("modalInfoBody"); 
   modalInfoBody.innerHTML= ` 
     <div class="div-img-info"><img src="${card.imagem}" alt="${card.nome}" class="img-info"><div>
+    <h2>${card.nome}</h2>
     <div class="div-text-info" id="div-text-info">${card.texto}<div>`;
   modal.show();
 }
@@ -232,11 +256,23 @@ await fetchCards();
 if(CARDS.length > 0) {
   loadGame();  
   loadCardsPlayed();
-} 
+}  
 document.querySelector('#tabuleiro').addEventListener('click', (e) => {
   const card = e.target.closest('.cartao');
-  if (card) flipCard(card);
+  if (!card) return;
+
+  const cardId = card.getAttribute('data-id');
+
+  // Se já foi acertada, apenas abre o modal e não deixa virar de novo
+  if (card.classList.contains('is-matched')) {
+    abrirModalInfo(cardId);
+    return;
+  }
+
+  // Caso contrário, segue o fluxo normal de virar/checar par
+  flipCard(card);
 });
+
 window.abrirModalInfo = abrirModalInfo; 
 
 
