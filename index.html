@@ -7,8 +7,9 @@
   <title>QUEERiosity - Jogo da memória queer</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script type="module" src="js/includes.js"></script>
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"><!-- Font Awesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script type="module" src="js/includes.js"></script>  
 </head>
 
 <body>
@@ -20,8 +21,10 @@
   <main class="centralizado">
     <div id="divInstrucoes" class="texto-centralizado">
     </div>
-    <div class="tabuleiro" id="tabuleiro"></div>
-
+    <div  class="tabuleiro hidden" id="divTelaInicial">
+        <div class="tabuleiro" id="tabuleiro"></div>
+        <p class="card-text"><a href="./index.html" class="btn btn-primary"><i class="fa-solid fa-rotate-right"></i> Nova partida</a></p>
+    </div>
     <div id="divResultado" class="hidden">
       <div class="d-flex justify-content-center my-4">
         <div class="card mb-3" id="cardResultado">
@@ -42,13 +45,18 @@
         </div>
       </div>
 
-
       <div class="texto-centralizado">
         <h2>Cientistas nessa jogada</h2>
         <p>Jogue de novo para descobrir outras pessoas!</p>
       </div>
-      <div class="tabuleiroResultado" id="cartoes-cientistas"></div>
+      <div class="tabuleiroResultado" id="cartoes-cientistas"></div> 
     </div>
+
+    <div id="loading" class="text-center my-4">
+      <img src="files/loading.gif" alt="Carregando..." width="80">
+      <p>Carregando cartas...</p>
+    </div>
+    <div id="erro"></div>
   </main>
 
   <!-- Modal -->
@@ -57,13 +65,12 @@
     <div class="modal-dialog modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="modalInfoLabel"></h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="modalInfoBody"></div>
-        <div class="modal-footer">
+        <div class="modal-footer rodapeModalCientista">
           <div id="divSaibaMais"></div>
-          <button type="button" class="btn btn-success" id="continuarJogo" data-bs-dismiss="modal">Voltar</button>
+          <button type="button" class="btn btn-outline-secondary" id="continuarJogo" data-bs-dismiss="modal">Voltar</button>
         </div>
       </div>
     </div>
