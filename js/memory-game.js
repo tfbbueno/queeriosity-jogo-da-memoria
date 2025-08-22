@@ -78,32 +78,41 @@ function getRandomCards(amount) {
   return shuffled.slice(0, amount);
 }
 
-function insertCardsIntoTheBoard(cards) {
-  const boardEl = document.querySelector('#tabuleiro');
-  var column = Math.ceil(Math.sqrt(amountOfCards*2)); 
+function getColumnAmount(amountOfCards) {
+    let column = Math.ceil(Math.sqrt(amountOfCards * 2));
 
-  var tabuleiro = `
-  <div class="container text-center">
-  
-  <div class="row row-cols-sm-2 row-cols-md-${column} row-cols-lg-${column}">
-  `;
-  tabuleiro += cards.map(card => `
-    <div class="col d-flex justify-content-center">
-    <div class="cartao" id="card-${card.id}" data-id="${card.id}">
-      <div class="cartao-front">
-        <img src="./files/front.png" class="img-cartao">
-      </div>
-      <div class="cartao-back">
-        <div><img src="${card.imagem}" class="img-cartao"></div>
-        <!--<div class="nome-cartao">${card.nome}</div>-->
-      </div>
-    </div>
-    </div>
-  `).join('');
-  tabuleiro+='</div></div>';
-  boardEl.innerHTML = tabuleiro;
+  // garante que seja sempre par
+  if (column % 2 !== 0) {
+    column++;
+  }
+  return column;
 }
 
+function insertCardsIntoTheBoard(cards) {
+  const boardEl = document.querySelector('#tabuleiro');
+  let column = getColumnAmount(cards.length); 
+
+  const tabuleiro = `
+    <div class="container text-center">
+      <!-- xs: 2 colunas; sm+: 2; md+ e lg+: 'column' (sempre par) -->
+      <div class="row g-3 row-cols-4 row-cols-sm-4 row-cols-md-${column} row-cols-lg-${column} justify-content">
+        ${cards.map(card => `
+          <div class="col d-flex justify-content-center">
+            <div class="cartao" id="card-${card.id}" data-id="${card.id}">
+              <div class="cartao-front">
+                <img src="./files/front.png" class="img-cartao">
+              </div>
+              <div class="cartao-back">
+                <div><img src="${card.imagem}" class="img-cartao"></div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  boardEl.innerHTML = tabuleiro;
+}
 
 function flipCard(card) {
   const cardId = card.getAttribute("data-id"); 
