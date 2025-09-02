@@ -12,13 +12,12 @@ Neste jogo, o jogador deve encontrar pares de cartas iguais. A cada par descober
 queeriosity-jogo-memoria/
 ├── index.html
 ├── about.html
+├── cartas.html
 ├── .github/
 │   └── workflows
 │       └── deploy.yml
 ├── js/
-│   └── firebaseConfig.js
-│   └── includes.js
-│   └── memory-game.js
+│   └── arquivos javascript
 ├── partials/
 │   ├── navbar.html
 │   └── footer.html 
