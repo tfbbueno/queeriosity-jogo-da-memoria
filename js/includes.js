@@ -19,15 +19,15 @@ function withTimeout(promise, ms = SECOND) {
 
 // Mensagens de alerta no seletor informado 
 function showMessage(message, id = "erro", type = "warning") {
-    document.getElementById(id).innerHTML = `
+  document.getElementById(id).innerHTML = `
       <div class="alert alert-${type} text-center mt-4" role="alert">
           ${message}
       </div>
     `;
 }
- 
+
 function loadComponent(id, file) {
-  const el = document.getElementById(id); 
+  const el = document.getElementById(id);
 
   fetch(file)
     .then(res => {
@@ -37,9 +37,9 @@ function loadComponent(id, file) {
     .then(html => {
       if (el) el.innerHTML = html;
     })
-    .catch(err => {  
-        showMessage("Falha ao carregar componente. Tente novamente mais tarde.", "erro", "danger");
-      
+    .catch(err => {
+      showMessage("Falha ao carregar componente. Tente novamente mais tarde.", "erro", "danger");
+
     });
 }
 
@@ -80,6 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (path.includes("about.html")) {
+    carregarTexto("about", "about", "#about");
+  }
+  if (path.includes("cartas.html")) {
     carregarTexto("about", "about", "#about");
   }
 
