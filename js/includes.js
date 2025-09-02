@@ -1,14 +1,16 @@
 // js/includes.js
 import { firebaseConfig } from './firebaseConfig.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
+
+const SECOND = 1_000;
 // Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Helper: dá timeout em uma promise (padrão 10s)
-function withTimeout(promise, ms = 10000) {
+function withTimeout(promise, ms = SECOND) {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
@@ -41,27 +43,31 @@ function loadComponent(id, file) {
     });
 }
 
-// Busca conteúdos estáticos no Firestore com timeout + loader local
+// Busca conteúdos estáticos no Firestore com timeout + loader local 
 async function carregarTexto(pagina, chave, seletor) {
   const el = document.querySelector(seletor);
 
   try {
-    const snap = await withTimeout(getDocs(collection(db, "conteudoEstatico")), 10000);
-    const conteudoEstatico = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const q = query(collection(db, "conteudoEstatico"), limit(1));
+    const snap = await withTimeout(getDocs(q), SECOND);
+    if (snap.empty) throw new Error("coleção vazia");
 
-    if (conteudoEstatico.length > 0) {
-      const data = conteudoEstatico[0];
-      if (data[pagina] && data[pagina][chave]) {
-        if (el) el.innerHTML = data[pagina][chave];
-        return;
-      }
+    const data = snap.docs[0].data() || {};
+    const html = data?.[pagina]?.[chave];
+
+    if (typeof html === "string") {
+      if (el) el.innerHTML = html;
+      return;
     }
+
     // Sem dados úteis
-    showMessage("Erro ao carregar conteúdo. Tente novamente mais tarde.");
+    throw new Error(`campo ausente: ${pagina}.${chave}`);
   } catch (err) {
+    console.error("carregarTexto:", err);
     showMessage("Erro ao carregar conteúdo. Tente novamente mais tarde.", "erro", "danger");
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   loadComponent("navbar", "partials/navbar.html");
